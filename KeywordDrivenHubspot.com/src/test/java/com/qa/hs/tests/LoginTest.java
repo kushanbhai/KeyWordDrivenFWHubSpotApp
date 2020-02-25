@@ -13,4 +13,11 @@ public class LoginTest {
 		keyWordEngine = new KeywordEngine();
 		keyWordEngine.startExecution("login");
 	}
+	
+	@Test
+	public void signUpTest() {
+		keyWordEngine = new KeywordEngine();
+		keyWordEngine.startExecution("signUp");
+	}
+	
 }

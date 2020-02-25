@@ -8,6 +8,8 @@ import java.util.Properties;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 public class Base {
 
@@ -25,6 +27,12 @@ public class Base {
 			 else {
 				 driver = new ChromeDriver();
 			 }
+		 }
+		 else if(browsername.equals("firefox")) {
+			 System.setProperty("webdriver.gecko.driver", "C:\\Users\\Kushan\\Desktop\\Selenium Setup\\Gekodriver\\geckodriver-v0.26.0-win64\\geckodriver.exe");
+			 DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+			 capabilities.setCapability("marionette",true);
+			 driver = new FirefoxDriver(capabilities);
 		 }
 		 return driver;
 	 }

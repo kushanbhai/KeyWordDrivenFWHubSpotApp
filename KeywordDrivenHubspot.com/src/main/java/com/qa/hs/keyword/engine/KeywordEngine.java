@@ -24,13 +24,11 @@ public class KeywordEngine {
 	public Base baseclass;
 	public WebElement ele;
 
-	public final String SCENARIO_SHEET = "C:\\Users\\Kushan\\eclipse-workspace\\KeywordDrivenHubspot.com"
-			+ "\\src\\main\\java\\com\\qa\\hs\\keyword\\scenarios\\hubspot_scenarios.xlsx";
+	public final String SCENARIO_SHEET = "C:\\Users\\Kushan\\git\\KeyWordDrivenFWHubSpotApp\\KeywordDrivenHubspot.com\\src\\main\\java\\com\\qa\\hs\\keyword\\scenarios\\hubspot_scenarios.xlsx";
 
 	public void startExecution(String sheetName) {
 		FileInputStream file = null;
-		String locatorName = null;
-		String locatorvalue = null;
+
 		try {
 			file = new FileInputStream(SCENARIO_SHEET);
 		} catch (FileNotFoundException e) {
@@ -47,71 +45,121 @@ public class KeywordEngine {
 		int k = 0;
 		for (int i = 0; i < sheet.getLastRowNum(); i++) {
 			try {
-			String locatorcolvalue = sheet.getRow(i + 1).getCell(k + 1).toString().trim();// id=username
-			if (!locatorcolvalue.equalsIgnoreCase("NA")) {
-				locatorName = locatorcolvalue.split("=")[0].trim();
-				locatorvalue = locatorcolvalue.split("=")[1].trim();
-			}
-			String action = sheet.getRow(i + 1).getCell(k + 2).toString().trim();
-			String value = sheet.getRow(i + 1).getCell(k + 3).toString().trim();
-			switch (action) {
-			case "open browser":
-				baseclass = new Base();
-				prop = baseclass.init_properties();
-				if (value.isEmpty() || value.equals("NA")) {
-					driver = baseclass.init_driver(prop.getProperty("browser"));
-				} else {
-					driver = baseclass.init_driver(value);
-					 Thread.sleep(3000);
-				}
-				break;
-			case "enter url":
-				if (value.isEmpty() || value.equals("NA")) {
-					driver.get(prop.getProperty("url"));
+				String locatorType = sheet.getRow(i + 1).getCell(k + 1).toString().trim();
 
+				String locatorValue = sheet.getRow(i + 1).getCell(k + 2).toString().trim();
+				String action = sheet.getRow(i + 1).getCell(k + 3).toString().trim();
+				String value = sheet.getRow(i + 1).getCell(k + 4).toString().trim();
+				System.out.println(value);
+				switch (action) {
+				case "open browser":
+					baseclass = new Base();
+					prop = baseclass.init_properties();
+					if (value.isEmpty() || value.equals("NA")) {
+						driver = baseclass.init_driver(prop.getProperty("browser"));
+					} else {
+						driver = baseclass.init_driver(value);
+						Thread.sleep(3000);
+					}
+					break;
+				case "enter url":
+					if (value.isEmpty() || value.equals("NA")) {
+						driver.get(prop.getProperty("url"));
+
+					}
+
+					else {
+						driver.get(value);
+						Thread.sleep(9000);
+					}
+					break;
+
+				case "quit":
+					driver.quit();
+					break;
+				default:
+					break;
 				}
 
-				else {
-					driver.get(value);
-					 Thread.sleep(9000);
-				}
-				break;
+				switch (locatorType) {
+				case "id":
+					ele = driver.findElement(By.id(locatorValue));
+					if (action.equalsIgnoreCase("sendkeys")) {
+						ele.clear();
+						ele.sendKeys(value);
+						Thread.sleep(3000);
 
-			case "quit":
-				driver.quit();
-				break;
-			default:
-				break;
-			}
-			
-			switch (locatorName) {
-			case "id":
-				 ele = driver.findElement(By.id(locatorvalue));
-				if(action.equalsIgnoreCase("sendkeys")) {
-					ele.clear();
-					ele.sendKeys(value);
-					Thread.sleep(3000);
-				}
-				
-				else if(action.equalsIgnoreCase("click")) {
+					} else if (action.equalsIgnoreCase("click")) {
+						ele.click();
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("getText")) {
+						String eletext = ele.getText();
+						System.out.println("text from element is: " + eletext);
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("isDisplayed")) {
+						ele.isDisplayed();
+						Thread.sleep(3000);
+					}
+					locatorType = null;
+					break;
+
+				case "xpath":
+					Thread.sleep(7000);
+					ele = driver.findElement(By.xpath(locatorValue));
+		
+					if (action.equalsIgnoreCase("sendkeys")) {
+						ele.clear();
+						ele.sendKeys(value);
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("click")) {
+						ele.click();
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("isDisplayed")) {
+						Thread.sleep(3000);
+						ele.isDisplayed();
+						System.out.println("element is displayed");
+
+					} else if (action.equalsIgnoreCase("getText")) {
+						String eletext = ele.getText();
+						System.out.println("text from element is: " + eletext);
+						Thread.sleep(3000);
+					}
+					System.out.println("successfully clicked on xpath element");
+					locatorType = null;
+					break;
+
+				case "className":
+					ele = driver.findElement(By.className(locatorValue));
+					if (action.equalsIgnoreCase("sendkeys")) {
+						ele.clear();
+						ele.sendKeys(value);
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("click")) {
+						ele.click();
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("isDisplayed")) {
+						ele.isDisplayed();
+						Thread.sleep(3000);
+					} else if (action.equalsIgnoreCase("getText")) {
+						String eletext = ele.getText();
+						System.out.println("text from element is: " + eletext);
+						Thread.sleep(3000);
+					}
+
+					locatorType = null;
+					break;
+				case "linkText":
+					ele = driver.findElement(By.linkText(locatorValue));
 					ele.click();
 					Thread.sleep(3000);
+					locatorType = null;
+					break;
+				default:
+					break;
 				}
-				locatorName = null;
-				break;
-			case "linkText":
-				 ele = driver.findElement(By.linkText(locatorvalue));
-				 ele.click();
-				 Thread.sleep(3000);
-				 locatorName = null;
-				 break;
-			default:
-				break;
-			}
-		}
-			catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 	}
-}
 }
